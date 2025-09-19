@@ -69,7 +69,7 @@ jobs:
 
   # Merges all the build artifacts together into a single godot-cpp-template artifact.
   # If you comment out this step, all the builds will be uploaded individually.
-  merge:
+  merge-artifacts:
     runs-on: ubuntu-22.04
     needs: build
     if: ${{ !cancelled() }}
