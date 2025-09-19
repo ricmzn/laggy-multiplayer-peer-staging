@@ -58,7 +58,7 @@ jobs:
         run: |
           mkdir -p artifact/addons/laggy-multiplayer-peer
           mv demo/bin artifact/addons/laggy-multiplayer-peer/bin
-          find artifact -name *.exp -or -name *.lib -or -name *.pdb -exec rm -f {} \;
+          find . -name *.exp -or -name *.lib -or -name *.pdb -exec rm -f {} \;
 
       # Upload the build
       - name: Upload Artifact
