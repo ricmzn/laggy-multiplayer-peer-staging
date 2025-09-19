@@ -44,7 +44,6 @@ jobs:
           platform: ${{ matrix.target.platform }}
 
       # Build GDExtension (with caches)
-
       - name: Restore .scons_cache
         uses: ./godot-cpp/.github/actions/godot-cache-restore
         with:
