@@ -44,7 +44,6 @@ jobs:
           platform: ${{ matrix.target.platform }}
 
       # Build GDExtension (with caches)
-
       - name: Restore .scons_cache
         uses: ./godot-cpp/.github/actions/godot-cache-restore
         with:
@@ -64,37 +63,31 @@ jobs:
           scons-cache: ${{ github.workspace }}/.scons-cache/
           cache-name: ${{ matrix.target.platform }}_${{ matrix.target.arch }}_${{ matrix.float-precision }}_${{ matrix.target-type }}
 
-      # Clean up compilation files
-      - name: Windows - Delete compilation files
-        if: ${{ matrix.target.platform == 'windows' }}
-        shell: pwsh
-        run: |
-          Remove-Item demo/bin/* -Include *.exp,*.lib,*.pdb -Force
-
       # Package files as an addon
       - name: Package Addon
         shell: bash
         run: |
-          mkdir -p addons/laggy-multiplayer-peer
-          mv demo/bin/* addons/laggy-multiplayer-peer/ 
+          mkdir -p artifact/addons/laggy-multiplayer-peer
+          mv demo/bin artifact/addons/laggy-multiplayer-peer/bin
+          find . \( -name *.exp -or -name *.lib -or -name *.pdb \) -exec rm -f {} \;
 
       # Upload the build
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: artifact-${{ matrix.target.platform }}-${{ matrix.target.arch }}-${{ matrix.float-precision }}-${{ matrix.target-type }}
-          path: |
-            ${{ github.workspace }}/addons/**
+          path: artifact
 
   # Merges all the build artifacts together into a single godot-cpp-template artifact.
   # If you comment out this step, all the builds will be uploaded individually.
-  merge:
+  merge-artifacts:
     runs-on: ubuntu-22.04
     needs: build
+    if: ${{ !cancelled() }}
     steps:
       - name: Merge Artifacts
         uses: actions/upload-artifact/merge@v4
         with:
-          name: laggy-multiplayer-peer-${{ github.sha }}
+          name: LaggyMultiplayerPeer-${{ github.sha }}
           pattern: artifact-*
           delete-merged: true
